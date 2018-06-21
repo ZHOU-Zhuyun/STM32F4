@@ -89,6 +89,30 @@ int main(void)
   /* Initilaize the LwIP stack */
   LwIP_Init();
   
+  
+  #ifndef USE_DHCP
+    /* Show the IP address on LCD */
+    char s[20];
+
+    sprintf(s,"ip:%d.%d.%d.%d", \
+             IP_ADDR0, IP_ADDR1,\
+             IP_ADDR2, IP_ADDR3);
+    GLCD_print(s);
+  #else
+    struct netif my_netif;
+    GLCD_print("Obtaining IP...");
+
+    dhcp_coarse_tmr();
+    dhcp_fine_tmr();
+        
+    dhcp_start(&my_netif); /* starts a DHCP client instance which configures the interface by obtaining an IP address lease and maintaining it. */
+
+  // dhcp_release(netif); /* end the lease */
+  // dhcp_stop(netif); /* remove the DHCP client */
+
+  #endif
+  
+  
   /* Http webserver Init */
   httpd_init();
     
